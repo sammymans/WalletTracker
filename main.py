@@ -1,8 +1,14 @@
 #import requests
-import pip._vendor.requests as requests
-import telegram
-
+from typing import Text, final
 from bs4 import BeautifulSoup
+import requests
+
+import urllib.request
+from urllib.request import Request, urlopen
+import pandas as pd
+
+import re
+import telegram
 
 # function to send message to telegram bot
 def telegram_bot_sendtext(bot_message):
@@ -77,48 +83,85 @@ print(new_txn)
 
 if new_txn == last_txn:
     print("same")
-    telegram_bot_sendtext("same")
+
+    #telegram_bot_sendtext("same")
 else:
     # if the transactions are different, need to send telegram message saying what was traded
     # get the contract address of the token traded & and the amount traded in ETH
 
-    
+    etherscan_url = "https://etherscan.io/address/" + address
+    etherscan_req = Request(etherscan_url, headers={'User-Agent': 'Chrome/96.0.4664.110'})
 
+    etherscan_response = urlopen(etherscan_req, timeout=0.5).read()
+    etherscan_response_close = urlopen(etherscan_req, timeout=0.5).close()
 
+    etherscan_soup = BeautifulSoup(etherscan_response, "html.parser")
 
+    txn_table = etherscan_soup.find("table", attrs={"class": "table table-hover"})
+    txn_table_data = txn_table.find_all("tr")
 
+    links = []
+    for link in etherscan_soup.find_all('a'):
+        links.append(str(link.get('href')))
+        
+    for link in links:
+        if last_txn in link:
+            # url of txn hash block
+            last_txn_url = 'https://etherscan.io' + link
+            
+    print(last_txn_url)
+    print(type(last_txn_url))
 
+    last_txn_req = Request(last_txn_url, headers={'User-Agent': 'Chrome/96.0.4664.110'})
+
+    last_txn_response = urlopen(last_txn_req, timeout=0.5).read()
+    last_txn_response_close = urlopen(last_txn_req, timeout=0.5).close()
+
+    last_txn_soup = BeautifulSoup(last_txn_response, "html.parser")
+
+    # print(last_txn_soup)
+
+    media_bodies = []
+    for ye in last_txn_soup.find_all('div', attrs={'class': 'media-body'}):
+        media_bodies.append(ye)
+        
+    txn_action = media_bodies[0]
+    print(txn_action)
+
+    # txn_actions = last_txn_soup.find_all('a', class_='mr-1 d-inline-block')
+    # print(txn_actions)
+
+    ca_html = (txn_action.find('a', class_='mr-1 d-inline-block'))
+    print(ca_html)
+    ca = ca_html.get('href')
+    final_ca = ca[7:]
+    print(final_ca)
+
+    print('\n')
+
+    text = []
+    for span in txn_action.findAll('span'):
+        text.append(span.text)
+
+    #print(text)
+
+    amount_initial = str(text[1])
+    token_initial = str(text[2])
+    for_amount = str(text[4])
+    token_ca = str(final_ca)
+    message = "UniSwap Transaction With: " + token_ca
+
+    print(message)
     print("diff")
+
     # send telegram message
-    telegram_bot_sendtext("diff")
+    telegram_bot_sendtext(message)
 
 
-etherscan_url = 'https://etherscan.io/address/' + address
-page = requests.get(etherscan_url)
-soup = BeautifulSoup(page.content, 'html.parser')
-page.close()
 
-#print(soup.prettify())
-recent_txn = soup.find_all('span', style=True)
-print(recent_txn)
 
-#u-label u-label--xs u-label--info rounded text-dark text-center
 
-# print all of the transactions with select data
-# for i,transaction in enumerate(result):
-#     time = transaction.get("timeStamp")
-#     hash = transaction.get("hash")
-#     tx_from = transaction.get("from")
-#     tx_to = transaction.get("to")
-#     tx_value = transaction.get("value")
 
-#     print("Transaction # ", i)
-#     print("time: ", time)
-#     print("hash: ", hash)
-#     print("from address: ", tx_from)
-#     print("to address: ", tx_to)
-#     print("value: ", float(tx_value)*0.000000000000000001)
-#     print("\n")
 
 
     

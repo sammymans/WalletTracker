@@ -12,11 +12,13 @@ import telegram
 
 import os
 
+import emoji
+
 
 # function to send message to telegram bot
 def telegram_bot_sendtext(bot_message):
 
-   bot_token = ''
+   bot_token = '5082173588:AAESTXSXnmNG8PP0CjJXt0PyoJSNzcez610'
    bot_chatID = '1908664243'
    send_text = 'https://api.telegram.org/bot' + bot_token + '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + bot_message
 
@@ -26,13 +28,13 @@ def telegram_bot_sendtext(bot_message):
 
 module = "account"
 action = "txlist"
-address = "0x2812B2eAe0533d2aD78e647792ae800DD78321dc"              # <------ INPUT THE WALLET ADDRESS OF INTEREST HERE
+address = "0x8FDA3f6b19dF2091bead80E35E8a5d6Cb1E4a0c0"              # <------ INPUT THE WALLET ADDRESS OF INTEREST HERE
 startblock = "0"
 endblock = "99999999"
 page="1"
 offset="" # leave empty to print all
 sort="asc"
-apikey=""
+apikey="T6XDIRRXSNEUZHVCQ3E7YPI7B1RPZUSMSI"
 
 # take out s out of https???
 url_txns = "https://api.etherscan.io/api?module=" + module + "&action=" + action +"&address=" + address + "&startblock=" + startblock + "&endblock="+ endblock + "&page="+ page+"&offset="+ offset +"&sort="+sort+"&apikey=" + apikey
@@ -121,7 +123,7 @@ if os.path.isfile(address + 'log.txt'):
             if last_txn in link:
                 # url of txn hash block
                 last_txn_url = 'https://etherscan.io' + link
-                # pass # COMMENT OUT LATER
+                #pass # COMMENT OUT LATER
 
         #test cases
         # transfer
@@ -151,14 +153,13 @@ if os.path.isfile(address + 'log.txt'):
         # print(last_txn_soup)
 
         # If status of the transaction is a fail, exit
-
         for data in last_txn_soup.find_all('div', attrs={'class': 'col col-md-9'}):
             status = data.text
         
         if status == "Fail":
             print("Status is 'Fail'")
         else:
-            print("Status is 'Success")
+            print("Status is 'Success'")
 
             # Check if one of transfer, multicall, approve, claim, swap:
 
@@ -184,7 +185,7 @@ if os.path.isfile(address + 'log.txt'):
                     ca_html_claim = str(ca_html_claim.get('href'))
                     ca_claim = ca_html_claim[7:49]
                     
-                    telegram_bot_sendtext("The Wallet: \n" + address + "\n" + "Claimed \n" + ca_claim)
+                    telegram_bot_sendtext("*Wallet:* " + address + "\n" + "\U0001F4B0 Claimed \U0001F4B0 \n" + "*Token:* " + ca_claim)
 
                 # else must be either an approval or a swap of tokens
                 else:
@@ -195,7 +196,7 @@ if os.path.isfile(address + 'log.txt'):
                         ca_html_approve = str(ca_html_approve.get('href'))
                         ca_approve = ca_html_approve[7:]
 
-                        telegram_bot_sendtext("The Wallet: \n" + address + "\n" + "Approved \n" + ca_approve)
+                        telegram_bot_sendtext("*Wallet:* " + address + "\n" + "\U00002705 Approved \U00002705 \n" + "*Token:* " + ca_approve)
 
                     # Else, must be a swap
                     else:
@@ -214,7 +215,7 @@ if os.path.isfile(address + 'log.txt'):
                         
                         #print(words)
 
-                        telegram_bot_sendtext("Wallet " + address + " Swapped: \n" + words[0] + " " + ca_swap + " For " + words[1] + " " + words[2])
+                        telegram_bot_sendtext("*Wallet:* " + address + "\n" + "\U0001F4EC Swapped \U0001F4EC \n" + "*Token:* \n" + words[0] + " " + ca_swap + "\nFor " + words[1] + " " + words[2])
 else:
     print("file does not exist")
     f = open(address + 'log.txt','w')

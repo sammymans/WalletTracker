@@ -38,7 +38,7 @@ for wallet_address in address_list:
 
     module = "account"
     action = "txlist"
-    address = wallet_address              # <------ INPUT THE WALLET ADDRESS OF INTEREST HERE
+    address = wallet_address              # <------ WALLET ADDRESS
     startblock = "0"
     endblock = "99999999"
     page="1"
@@ -117,8 +117,10 @@ for wallet_address in address_list:
             etherscan_url = "https://etherscan.io/address/" + address
             etherscan_req = Request(etherscan_url, headers={'User-Agent': 'Chrome/96.0.4664.110'})
 
-            etherscan_response = urlopen(etherscan_req, timeout=0.5).read()
-            etherscan_response_close = urlopen(etherscan_req, timeout=0.5).close()
+            # add code for timeout?
+
+            etherscan_response = urlopen(etherscan_req, timeout=1).read()
+            etherscan_response_close = urlopen(etherscan_req, timeout=1).close()
 
             etherscan_soup = BeautifulSoup(etherscan_response, "html.parser")
 
@@ -135,7 +137,8 @@ for wallet_address in address_list:
                     last_txn_url = 'https://etherscan.io' + link
                     #pass # COMMENT OUT LATER
 
-            #test cases
+            #test cases:
+
             # transfer
             #last_txn_url = 'https://etherscan.io/tx/0x4ba8c56b0ec48d217032304b5c676de144d80d52825a67300afca157303cb3f9'
             # multicall
@@ -144,8 +147,10 @@ for wallet_address in address_list:
             #last_txn_url = 'https://etherscan.io/tx/0xd4c216586e2a43a5b90729606617a70e75b04bb6beb7cc8cf9ec26641df907a4'
             # claim
             #last_txn_url = 'https://etherscan.io/tx/0xf302d087828d507c4cfd7c33d0ea7cc9377f57d3b6372ce52a33ea094222af5d'
-            # swap
+            # swap (buy)
             #last_txn_url = 'https://etherscan.io/tx/0xa0cf45db93e2e436e3810a9f1664ee8b6305afd35956881286c949ceb0574b45'
+            # swap (sell)
+            #last_txn_url = 'https://etherscan.io/tx/0x433d8e08e23339d047479253aaf7f0edb8190a66d9eedc03ba537d6cb7adc746'
             # warning
             #last_txn_url = 'https://etherscan.io/tx/0x2b0b58fbe52f272889097b74c3ae9b238c6001a8efdbf16cf45bdc4c38a54c4f'
 
@@ -158,8 +163,8 @@ for wallet_address in address_list:
 
             last_txn_req = Request(last_txn_url, headers={'User-Agent': 'Chrome/96.0.4664.110'})
 
-            last_txn_response = urlopen(last_txn_req, timeout=0.5).read()
-            last_txn_response_close = urlopen(last_txn_req, timeout=0.5).close()
+            last_txn_response = urlopen(last_txn_req, timeout=1).read()
+            last_txn_response_close = urlopen(last_txn_req, timeout=1).close()
 
             last_txn_soup = BeautifulSoup(last_txn_response, "html.parser")
 
@@ -230,9 +235,14 @@ for wallet_address in address_list:
                             for content in txn_action.find_all('span', class_='mr-1 d-inline-block'):
                                 words.append(content.text)
                             
-                            #print(words)
+                            print(words)
 
-                            telegram_bot_sendtext("*Wallet:* " + address + "\n" + "\U0001F4EC Swapped \U0001F4EC \n" + "*Token:* \n" + words[0] + " " + ca_swap + "\nFor " + words[1] + " " + words[2])
+                            # Check if it is a buy or a sell
+                            if words[1] == "Ether":
+                                telegram_bot_sendtext("*Wallet:* " + address + "\n" + "\U0001F4EC Swapped - BUY \U0001F4EC \n" + "*Token:* \n" + words[0] + " " + words[1] + "\nFor " + words[2] + " " + ca_swap)
+                            else:
+                                telegram_bot_sendtext("*Wallet:* " + address + "\n" + "\U0001F4EC Swapped - SELL \U0001F4EC \n" + "*Token:* \n" + words[0] + " " + ca_swap + "\nFor " + words[1] + " " + words[2])
+
     else:
         print("file does not exist, file created")
         f = open(address + 'log.txt','w')

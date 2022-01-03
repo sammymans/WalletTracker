@@ -18,7 +18,7 @@ import emoji
 # function to send message to telegram bot
 def telegram_bot_sendtext(bot_message):
 
-   bot_token = '5082173588:AAESTXSXnmNG8PP0CjJXt0PyoJSNzcez610'
+   bot_token = ''
    bot_chatID = '1908664243'
    send_text = 'https://api.telegram.org/bot' + bot_token + '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + bot_message
 
@@ -45,7 +45,7 @@ for wallet_address in address_list:
     page="1"
     offset="" # leave empty to print all
     sort="asc"
-    apikey="T6XDIRRXSNEUZHVCQ3E7YPI7B1RPZUSMSI"
+    apikey=""
 
     # take out s out of https???
     url_txns = "https://api.etherscan.io/api?module=" + module + "&action=" + action +"&address=" + address + "&startblock=" + startblock + "&endblock="+ endblock + "&page="+ page+"&offset="+ offset +"&sort="+sort+"&apikey=" + apikey

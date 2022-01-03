@@ -18,7 +18,7 @@ import emoji
 # function to send message to telegram bot
 def telegram_bot_sendtext(bot_message):
 
-   bot_token = ''
+   bot_token = '5082173588:AAESTXSXnmNG8PP0CjJXt0PyoJSNzcez610'
    bot_chatID = '1908664243'
    send_text = 'https://api.telegram.org/bot' + bot_token + '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + bot_message
 
@@ -26,12 +26,13 @@ def telegram_bot_sendtext(bot_message):
 
    return response.json()
 
-address_list = ['0x2812B2eAe0533d2aD78e647792ae800DD78321dc', 
-                '0x8FDA3f6b19dF2091bead80E35E8a5d6Cb1E4a0c0', 
-                '0xD3057d9c2315EbAB53b84659D4cAc71fEf7031Ee',
-                '0x15A7DAF8a04942cA22d14B2e431578d939C5b2C0',
-                '0xa78AA318431A86b77a9621C357c4a7D9eBb46827',
-                '0x01AbA45695FD77EB95A6C194873cf3617aAe4798']
+address_list = []
+
+with open('config.txt') as file:
+    for line in file:
+        address_list.append(line.strip())
+
+print(address_list)
 
 print("\nNew: ")
 for wallet_address in address_list:
@@ -44,7 +45,7 @@ for wallet_address in address_list:
     page="1"
     offset="" # leave empty to print all
     sort="asc"
-    apikey=""
+    apikey="T6XDIRRXSNEUZHVCQ3E7YPI7B1RPZUSMSI"
 
     # take out s out of https???
     url_txns = "https://api.etherscan.io/api?module=" + module + "&action=" + action +"&address=" + address + "&startblock=" + startblock + "&endblock="+ endblock + "&page="+ page+"&offset="+ offset +"&sort="+sort+"&apikey=" + apikey

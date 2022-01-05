@@ -19,6 +19,8 @@ import time
 
 import datetime
 
+from fp.fp import FreeProxy
+
 current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 print(current_time)
 
@@ -49,6 +51,10 @@ def run():
     address_list = get_addresses()
     print(address_list)
 
+    # proxy = FreeProxy().get()
+    # print(proxy)
+    # proxies = {"http": proxy}
+
     for wallet_address in address_list:
 
         # --------------------------------- ACCESS THE ETHERSCAN WEBSITE FOR THE WALLET --------------------------------
@@ -68,6 +74,10 @@ def run():
 
         # api call
         response = requests.get(url_txns)
+
+        if response.status_code != 200:
+            print("json error")
+            break
 
         # retrieve 'result' and put into a dictionary
         address_content = response.json()
@@ -127,14 +137,16 @@ def run():
                 # get the contract address of the token traded & and the amount traded in ETH
 
                 etherscan_url = "https://etherscan.io/address/" + address
-                etherscan_req = Request(etherscan_url, headers={'User-Agent': 'Chrome/96.0.4664.110'})
+                etherscan_req = Request(etherscan_url, headers={'User-Agent': 'Chrome/96.0.4664.110'}) # this is the old one
+                #print(etherscan_req)
 
-                # add code for timeout?
+                #etherscan_req = requests.get(etherscan_url,headers={'User-Agent': 'Chrome/96.0.4664.110'},proxies=proxies)
 
-                etherscan_response = urlopen(etherscan_req, timeout=1).read()
-                etherscan_response_close = urlopen(etherscan_req, timeout=1).close()
+                etherscan_response = urlopen(etherscan_req, timeout=1).read()             # this is the old one
+                etherscan_response_close = urlopen(etherscan_req, timeout=1).close()      # this is the old one
 
                 etherscan_soup = BeautifulSoup(etherscan_response, "html.parser")
+                #print(etherscan_soup)
 
                 txn_table = etherscan_soup.find("table", attrs={"class": "table table-hover"})
                 txn_table_data = txn_table.find_all("tr")
@@ -178,6 +190,7 @@ def run():
                 # ----------------------------------------------------------------------------------------------------
 
 
+                #last_txn_req = requests.get(last_txn_url, headers={'User-Agent': 'Chrome/96.0.4664.110'}, proxies=proxies)
                 last_txn_req = Request(last_txn_url, headers={'User-Agent': 'Chrome/96.0.4664.110'})
 
                 last_txn_response = urlopen(last_txn_req, timeout=1).read()
@@ -225,7 +238,7 @@ def run():
                             media_bodies.append(ye)
 
                         txn_action = media_bodies[0]
-                        print(txn_action)
+                        #print(txn_action)
 
                         print("APPROVED TOKENS")
                         ca_html_approve = (txn_action.find('a', href = True))
@@ -241,7 +254,7 @@ def run():
                             media_bodies.append(ye)
 
                         txn_action = media_bodies[0]
-                        print(txn_action)
+                        #print(txn_action)
 
                         print("SWAPPED")
                         ca_html_swap = (txn_action.find('a', class_='mr-1 d-inline-block'))
@@ -310,19 +323,10 @@ def run():
         print("\n")
 
 
-schedule.every(10).seconds.do(run)
+schedule.every(300).seconds.do(run)
 # schedule.every().hour.do(job)
 # schedule.every().day.at("10:30").do(job)
 
 while 1:
     schedule.run_pending()
     time.sleep(1)
-
-
-
-
-
-    
-
-
-

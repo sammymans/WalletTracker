@@ -20,9 +20,11 @@ Once an account has been made, the user must add the telegram bot as a contact:
 
 3. Add as a contact and wait for messages!
 
-## Screenshots (Demo)
+## Screenshots + Demo
 
 Wallet Tracker tracks 3 different transactions: token claims, token approvals, token trades
+
+https://user-images.githubusercontent.com/78626496/148144402-18928895-edd9-45c9-8226-8555b454660c.MP4
 
 ###### Token Claim
 
